@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Serpent Study Library</title>
+
+  <!-- Favicon (Snake icon) -->
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/8/88/Slytherin_Snake.svg" type="image/svg+xml">
+
+  <!-- Magical font -->
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Dark Slytherin Theme */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #121212;
+      margin: 0;
+      padding: 0;
+      color: #dcdcdc;
+      text-align: center;
+    }
+
+    header {
+      background: #1b5e20;
+      color: #dcdcdc;
+      padding: 1.5rem;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      text-shadow: 0 0 5px #00ff00;
+      font-family: 'UnifrakturCook', cursive;
+    }
+
+    header img {
+      margin-top: 10px;
+      width: 100px;
+    }
+
+    main {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 2rem;
+      gap: 2rem;
+    }
+
+    .card {
+      background: #212121;
+      padding: 2rem;
+      width: 300px;
+      border-radius: 15px;
+      box-shadow: 0px 0px 15px rgba(0, 255, 0, 0.4);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0px 0px 25px rgba(0, 255, 0, 0.7);
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      background: #388e3c;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #2e7d32;
+    }
+
+    input[type="text"], input[type="date"], select {
+      padding: 0.5rem;
+      width: 80%;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #4caf50;
+      background: #333;
+      color: white;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 10px;
+    }
+
+    li {
+      background: #33691e;
+      margin: 5px 0;
+      padding: 0.5rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    li:hover {
+      background: #558b2f;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 600px) {
+      main {
+        flex-direction: column;
+        align-items: center;
+      }
+      .card {
+        width: 90%;
+      }
+    }
+
+    /* Green Smoke Background */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://i.ibb.co/fSKKQJ6/smoke-green.gif') no-repeat center center/cover;
+      opacity: 0.15;
+      z-index: -1;
+      animation: backgroundMove 30s infinite linear;
+    }
+
+    @keyframes backgroundMove {
+      0% {background-position: 0 0;}
+      100% {background-position: 100% 100%;}
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Loading Screen -->
+<div id="loadingScreen" style="
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: #00ff00;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  font-family: 'UnifrakturCook', cursive;
+  z-index: 9999;
+">
+  Entering the Library...
+</div>
+
+<!-- Background Music -->
+<audio id="backgroundMusic" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6c6b65ad35.mp3?filename=harry-potter-main-theme-10233.mp3" loop preload="auto"></audio>
+<audio id="ambientSound" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_aa510e8137.mp3?filename=fireplace-sound-ambient-6683.mp3" loop preload="auto"></audio>
+
+<button id="startMusicBtn" style="
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 9999;
+  display: none;
+">Play Sound</button>
+
+<!-- Main Header -->
+<header>
+  Serpent Study Library
+  <br>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Slytherin_ClearBG.png/600px-Slytherin_ClearBG.png" alt="Slytherin Crest">
+</header>
+
+<!-- Main Content -->
+<main>
+
+  <!-- Pomodoro Timer -->
+  <div class="card" id="timer">
+    <h2>Pomodoro Timer</h2>
+    <select id="sessionType">
+      <option value="25">Work (25 min)</option>
+      <option value="5">Break (5 min)</option>
+    </select><br>
+    <p id="time">25:00</p>
+    <div id="progressContainer" style="background: #333; width: 100%; height: 10px; margin-top: 10px; border-radius: 5px;">
+      <div id="progressBar" style="height: 100%; width: 0%; background: #00ff00; border-radius: 5px;"></div>
+    </div>
+    <button onclick="startTimer()">Start</button>
+    <button onclick="resetTimer()">Reset</button>
+  </div>
+
+  <!-- To-Do List -->
+  <div class="card" id="todo">
+    <h2>To-Do List</h2>
+    <input type="text" id="taskInput" placeholder="New task...">
+    <button onclick="addTask()">Add</button>
+    <ul id="taskList"></ul>
+  </div>
+
+  <!-- Calendar -->
+  <div class="card" id="calendar">
+    <h2>Calendar</h2>
+    <input type="date" id="calendarInput">
+    <p id="selectedDate"></p>
+  </div>
+
+  <!-- Daily Planner -->
+  <div class="card" id="planner">
+    <h2>Daily Planner</h2>
+    <input type="text" id="hourlyTask" placeholder="Task (e.g., 10AM Meeting)">
+    <button onclick="addHourlyTask()">Add</button>
+    <ul id="plannerList"></ul>
+  </div>
+
+</main>
+
+<!-- Motivational Footer -->
+<footer style="margin: 30px 0; color: #9ccc65; font-style: italic;">
+  <p>"Ambition is the first step to success." – Salazar Slytherin</p>
+  <p>"Those cunning folk use any means to achieve their ends."</p>
+</footer>
+
+<!-- Snake Hiss Sound -->
+<audio id="alarmSound" src="https://freesound.org/data/previews/341/341695_6261191-lq.mp3" preload="auto"></audio>
+
+<!-- JavaScript -->
+<script>
+  // Loading Screen + Music Autoplay
+  window.addEventListener("load", () => {
+    const loadingScreen = document.getElementById("loadingScreen");
+    const backgroundMusic = document.getElementById("backgroundMusic");
+    const ambientSound = document.getElementById("ambientSound");
+    const startMusicBtn = document.getElementById("startMusicBtn");
+
+    setTimeout(() => {
+      loadingScreen.style.opacity = "0";
+      loadingScreen.style.transition = "opacity 1s ease-out";
+      setTimeout(() => {
+        loadingScreen.style.display = "none";
+
+        backgroundMusic.volume = 0.5;
+        ambientSound.volume = 0.2;
+        backgroundMusic.play().then(() => {
+          ambientSound.play();
+        }).catch(() => {
+          startMusicBtn.style.display = "block";
+        });
+
+      }, 1000);
+    }, 2000);
+
+    startMusicBtn.addEventListener("click", () => {
+      backgroundMusic.play();
+      ambientSound.play();
+      startMusicBtn.style.display = "none";
+    });
+  });
+
+  // Pomodoro Timer
+  let timer;
+  let minutes = 25;
+  let seconds = 0;
+
+  function updateDisplay() {
+    document.getElementById("time").innerText =
+      (minutes < 10 ? "0" : "") + minutes + ":" +
+      (seconds < 10 ? "0" : "") + seconds;
+  }
+
+  function startTimer() {
+    if (timer) return;
+    const totalSeconds = parseInt(document.getElementById("sessionType").value) * 60;
+    timer = setInterval(() => {
+      if (seconds === 0) {
+        if (minutes === 0) {
+          clearInterval(timer);
+          timer = null;
+          document.getElementById("alarmSound").play();
+          alert("Session complete!");
+          return;
+        }
+        minutes--;
+        seconds = 59;
+      } else {
+        seconds--;
+      }
+      updateDisplay();
+
+      // Progress bar update
+      const elapsedSeconds = totalSeconds - (minutes * 60 + seconds);
+      const progressPercent = (elapsedSeconds / totalSeconds) * 100;
+      document.getElementById("progressBar").style.width = progressPercent + "%";
+    }, 1000);
+  }
+
+  function resetTimer() {
+    clearInterval(timer);
+    timer = null;
+    minutes = parseInt(document.getElementById("sessionType").value);
+    seconds = 0;
+    updateDisplay();
+    document.getElementById("progressBar").style.width = "0%";
+  }
+
+  document.getElementById("sessionType").addEventListener("change", function() {
+    resetTimer();
+  });
+
+  // To-Do List
+  function addTask() {
+    const taskInput = document.getElementById("taskInput");
+    const taskText = taskInput.value.trim();
+    if (taskText === "") return;
+    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks.push(taskText);
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    taskInput.value = "";
+    renderTasks();
+  }
+
+  function renderTasks() {
+    const taskList = document.getElementById("taskList");
+    taskList.innerHTML = "";
+    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks.forEach((task, index) => {
+      const li = document.createElement("li");
+      li.innerText = task;
+      li.onclick = () => {
+        tasks.splice(index, 1);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        renderTasks();
+      };
+      taskList.appendChild(li);
+    });
+  }
+
+  renderTasks();
+
+  // Calendar
+  const calendarInput = document.getElementById("calendarInput");
+  const selectedDate = document.getElementById("selectedDate");
+
+  calendarInput.addEventListener("change", () => {
+    selectedDate.innerText = "Selected date: " + calendarInput.value;
+  });
+
+  // Daily Planner
+  function addHourlyTask() {
+    const taskInput = document.getElementById("hourlyTask");
+    const taskText = taskInput.value.trim();
+    if (taskText === "") return;
+    const planner = JSON.parse(localStorage.getItem("planner")) || [];
+    planner.push(taskText);
+    localStorage.setItem("planner", JSON.stringify(planner));
+    taskInput.value = "";
+    renderPlanner();
+  }
+
+  function renderPlanner() {
+    const plannerList = document.getElementById("plannerList");
+    plannerList.innerHTML = "";
+    const planner = JSON.parse(localStorage.getItem("planner")) || [];
+    planner.forEach((task, index) => {
+      const li = document.createElement("li");
+      li.innerText = task;
+      li.onclick = () => {
+        planner.splice(index, 1);
+        localStorage.setItem("planner", JSON.stringify(planner));
+        renderPlanner();
+      };
+      plannerList.appendChild(li);
+    });
+  }
+
+  renderPlanner();
+</script>
+
+</body>
+</html>
